@@ -31,4 +31,32 @@ public class DummyMeetingApiService implements MeetingApiService {
         }
         return true;
     }
+
+    @Override
+    public List<Meeting> getFilterByDay(String constraint) {
+        List<Meeting> filteredList = new ArrayList<>();
+        if(constraint == null || constraint.length() == 0) { filteredList.addAll(meetings); }
+        else {
+            String filterPattern = constraint.toLowerCase().trim();
+            for (Meeting m : meetings) {
+                if(m.getDate().toLowerCase().contains(filterPattern)) {filteredList.add(m);}
+            }
+        }
+
+        return filteredList;
+    }
+
+    @Override
+    public List<Meeting> getFilterByRoom(String constraint) {
+        List<Meeting> filteredList = new ArrayList<>();
+        if(constraint == null || constraint.length() == 0) { filteredList.addAll(meetings); }
+        else {
+            String filterPattern = constraint.toLowerCase().trim();
+            for (Meeting m : meetings) {
+                if(m.getRoom().toLowerCase().contains(filterPattern)) {filteredList.add(m);}
+            }
+        }
+
+        return filteredList;
+    }
 }

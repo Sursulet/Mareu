@@ -10,12 +10,7 @@
     <string name="rooms">Rooms</string>
     <string name="item_img">Room color</string>
     <string name="item_delete_btn">Delete btn</string>
-    <string name="roomsSpinner">Choose a room</string>
+    <string name="roomsSpinner">Room</string>
     <string name="img_item_room">Img item room</string>
     <string name="delete_filters">Cancel filter</string>
-
-    <string-array name="rooms_array">
-        <item>01</item>
-        <item>02</item>
-    </string-array>
 </resources>

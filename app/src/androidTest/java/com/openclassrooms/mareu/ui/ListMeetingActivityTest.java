@@ -92,7 +92,7 @@ public class ListMeetingActivityTest {
         onView (withText ("OK")).perform (click ());
         onView(ViewMatchers.withId(R.id.timeEditText)).perform(click());
         onView(ViewMatchers.withClassName(Matchers.equalTo (TimePicker.class.getName())))
-                .perform(PickerActions.setTime(9, 00));
+                .perform(PickerActions.setTime(7, 00));
         onView (withText ("OK")).perform (click ());
         onView(ViewMatchers.withId(R.id.emailEditText)).perform(typeText("xyz@gmail.com"));
         onView(ViewMatchers.withId(R.id.add_email_btn)).perform(click());

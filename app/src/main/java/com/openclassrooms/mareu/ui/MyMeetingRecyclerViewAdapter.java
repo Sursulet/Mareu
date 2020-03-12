@@ -5,8 +5,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,17 +24,14 @@ import butterknife.ButterKnife;
 
 import static com.openclassrooms.mareu.service.DummyRoomGenerator.DUMMY_ROOMS;
 
-public class MyMeetingRecyclerViewAdapter extends RecyclerView.Adapter<MyMeetingRecyclerViewAdapter.ViewHolder> implements Filterable {
+public class MyMeetingRecyclerViewAdapter extends RecyclerView.Adapter<MyMeetingRecyclerViewAdapter.ViewHolder> {
 
     private OnMeetingListener mOnMeetingListener;
     private Context mContext;
 
     private List<Meeting> mMeetings;
-    private String mFilterItem;
-    private List<Meeting> mList;
 
     MyMeetingRecyclerViewAdapter(Context context, List<Meeting> meetings, OnMeetingListener onMeetingListener) {
-        mList = new ArrayList<>(meetings);
         mContext = context;
         mMeetings = meetings;
         mOnMeetingListener = onMeetingListener;
@@ -70,40 +65,6 @@ public class MyMeetingRecyclerViewAdapter extends RecyclerView.Adapter<MyMeeting
 
     @Override
     public int getItemCount() { return mMeetings.size(); }
-
-    void getFilterItem(String item) { mFilterItem = item; }
-
-    @Override
-    public Filter getFilter() { return mMeetingsFilter; }
-
-    private Filter mMeetingsFilter = new Filter() {
-
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            List<Meeting> filteredList = new ArrayList<>();
-            if(constraint == null || constraint.length() == 0) { filteredList.addAll(mList); }
-            else {
-                String filterPattern = constraint.toString().toLowerCase().trim();
-                for (Meeting m : mList) {
-                    String id = mFilterItem;
-
-                    if(id.equals("days") && m.getDate().toLowerCase().contains(filterPattern)) {filteredList.add(m);}
-                    if(id.equals("rooms") && m.getRoom().toLowerCase().contains(filterPattern)) {filteredList.add(m);}
-                }
-            }
-
-            FilterResults results = new FilterResults();
-            results.values = filteredList;
-            return results;
-        }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            mMeetings.clear();
-            mMeetings.addAll((List) results.values);
-            notifyDataSetChanged();
-        }
-    };
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 

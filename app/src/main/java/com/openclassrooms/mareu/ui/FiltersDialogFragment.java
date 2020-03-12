@@ -35,6 +35,7 @@ public class FiltersDialogFragment extends DialogFragment {
     @BindView(R.id.filters_date) TextInputEditText mDate;
     @BindView(R.id.rooms) ChipGroup mRoomsList;
 
+    Chip chip;
     private String typeFilter, chipString;
 
     private Callback mCallback;
@@ -58,11 +59,15 @@ public class FiltersDialogFragment extends DialogFragment {
         buildToolbar();
         buildChipGroup();
 
-        mDate.setOnClickListener(v -> { typeFilter = "days"; showDatePickerDialog(); });
+        mDate.setOnClickListener(v -> {
+            typeFilter = "days";
+            if(chip != null) chip.setCheckable(false);
+            showDatePickerDialog();
+        });
 
         mRoomsList.setOnCheckedChangeListener((group, checkedId) -> {
-            if(checkedId < 0) { activity.getMeetingFilter("rooms", ""); return; }
-            Chip chip = group.findViewById(checkedId);
+            if(checkedId < 0) { mCallback.onActionFilter("", ""); return; }
+            chip = group.findViewById(checkedId);
             if(chip.isCheckable()) {
                 typeFilter = "rooms";
                 chipString = chip.getText().toString();
@@ -76,7 +81,7 @@ public class FiltersDialogFragment extends DialogFragment {
         mToolbar.inflateMenu(R.menu.menu_dialog_fragment);
         mToolbar.setNavigationIcon(R.drawable.ic_close);
         mToolbar.setTitle("Filters");
-        mToolbar.setNavigationOnClickListener(v -> {activity.getMeetingFilter("days", ""); dismiss();});
+        mToolbar.setNavigationOnClickListener(v -> {dismiss();});
         mToolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_ok) {
                 if(typeFilter == null) return false;
@@ -101,7 +106,7 @@ public class FiltersDialogFragment extends DialogFragment {
 
     private void showDatePickerDialog() {
         DialogFragment newFragment = new DatePickerFragment();
-        newFragment.show(manager, "datePicker");
+        newFragment.show(manager, "datePickerFilters");
     }
 
     private void buildChipGroup() {

@@ -22,6 +22,7 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -62,11 +63,6 @@ public class ListMeetingActivity extends AppCompatActivity implements MyMeetingR
         buildRecyclerView();
     }
 
-    public void getMeetingFilter(String typeFilter, String constraint) {
-        mAdapter.getFilterItem(typeFilter);
-        mAdapter.getFilter().filter(constraint);
-    }
-
     public MeetingApiService getService() { return service; }
 
     @Override
@@ -93,8 +89,11 @@ public class ListMeetingActivity extends AppCompatActivity implements MyMeetingR
     private void showFiltersDialog() {
         mFiltersDialog = new FiltersDialogFragment();
         mFiltersDialog.setCallback((typeFilter, constraint) -> {
-            mAdapter.getFilterItem(typeFilter);
-            mAdapter.getFilter().filter(constraint);
+            List<Meeting> mFilterList = new ArrayList<>();
+            if(typeFilter.equals("")) { mFilterList.addAll(mMeetings); }
+            if(typeFilter.equals("days")) mFilterList = service.getFilterByDay(constraint);
+            if(typeFilter.equals("rooms")) mFilterList = service.getFilterByRoom(constraint);
+            updateRecyclerView(mFilterList);
 
             if(mActionMode != null) { return; }
             mActionMode = startActionMode(mActionModeCallback);
@@ -143,7 +142,7 @@ public class ListMeetingActivity extends AppCompatActivity implements MyMeetingR
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         currentTimeString = String.format(Locale.FRANCE,"%d:%d", hourOfDay, minute);
-        mNewMeetingDialog.mTimeEditText.setText(currentTimeString);
+        if(mNewMeetingDialog != null && mNewMeetingDialog.isVisible()) mNewMeetingDialog.mTimeEditText.setText(currentTimeString);
     }
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -165,8 +164,13 @@ public class ListMeetingActivity extends AppCompatActivity implements MyMeetingR
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            mAdapter.getFilter().filter("");
+            updateRecyclerView(mMeetings);
             mActionMode = null;
         }
     };
+
+    private void updateRecyclerView(List<Meeting> meetings) {
+        mAdapter = new MyMeetingRecyclerViewAdapter(ListMeetingActivity.this, meetings, this);
+        mRecyclerView.setAdapter(mAdapter);
+    }
 }

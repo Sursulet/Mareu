@@ -148,12 +148,12 @@ public class NewMeetingDialogFragment extends DialogFragment implements View.OnC
 
     private void showDatePickerDialog() {
         DialogFragment newFragment = new DatePickerFragment();
-        newFragment.show(manager, "datePicker");
+        newFragment.show(manager, "datePickerNewMeeting");
     }
 
     private void showTimePickerDialog() {
         DialogFragment newFragment = new TimePickerFragment();
-        newFragment.show(manager, "timePicker");
+        newFragment.show(manager, "timePickerNewMeeting");
     }
 
     private boolean confirmForm() {
@@ -185,7 +185,7 @@ public class NewMeetingDialogFragment extends DialogFragment implements View.OnC
             mDateInputLayout.setError("Please enter a date");
             return false;
         }
-        if(mDatePicker.compareTo(mToday) < 0) {
+        if(mDatePicker!=null && mDatePicker.compareTo(mToday) < 0) {
             mDateInputLayout.setErrorEnabled(true);
             mDateInputLayout.setError("Valid date required");
             return false;

@@ -11,4 +11,6 @@ public interface MeetingApiService {
     void addMeeting(Meeting meeting);
     void deleteMeeting(Meeting meeting);
     boolean compareTime(String date, String time);
+    List<Meeting> getFilterByDay(String constraint);
+    List<Meeting> getFilterByRoom(String constraint);
 }

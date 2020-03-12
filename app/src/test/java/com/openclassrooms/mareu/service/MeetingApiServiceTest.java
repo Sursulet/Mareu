@@ -53,4 +53,16 @@ public class MeetingApiServiceTest {
         service.deleteMeeting(neighbourToDelete);
         assertFalse(service.getMeetings().contains(neighbourToDelete));
     }
+
+    @Test
+    public void getFilterByDay() {
+        List<Meeting> mFilteredList = service.getFilterByDay("28/03/2020");
+        assertEquals(1, mFilteredList.size());
+    }
+
+    @Test
+    public void getFilterByRoom() {
+        List<Meeting> mFilteredList = service.getFilterByRoom("07");
+        assertEquals(1, mFilteredList.size());
+    }
 }
