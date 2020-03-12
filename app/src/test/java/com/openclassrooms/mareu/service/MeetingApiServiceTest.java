@@ -25,8 +25,6 @@ public class MeetingApiServiceTest {
     @Test
     public void getMeetings() {
         List<Meeting> meetings = service.getMeetings();
-        //List<Meeting> expectedMeetings = DummyMeetingGenerator.DUMMY_MEETINGS;
-        //assertThat(meetings, IsIterableContainingInAnyOrder.containsInAnyOrder(expectedMeetings.toArray()));
         assertEquals(6, meetings.size());
     }
 

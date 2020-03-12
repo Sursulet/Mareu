@@ -23,6 +23,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.model.Meeting;
 import com.openclassrooms.mareu.model.RoomItem;
+import com.openclassrooms.mareu.service.MeetingApiService;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,6 +51,8 @@ public class NewMeetingDialogFragment extends DialogFragment implements View.OnC
 
     private Context context;
     private FragmentManager manager;
+    private MeetingApiService service;
+    private ListMeetingActivity activity;
 
     private String mTopicString, mDateString, mTimeString, mRoomString, mEmailString;
 
@@ -70,6 +73,8 @@ public class NewMeetingDialogFragment extends DialogFragment implements View.OnC
         View view = inflater.inflate(R.layout.fragment_dialog_new_meeting, container, false);
         ButterKnife.bind(this, view);
 
+        activity = (ListMeetingActivity) getActivity();
+        if (activity != null) { service = activity.getService(); }
         context = getContext();
         manager = getFragmentManager();
 
@@ -154,8 +159,7 @@ public class NewMeetingDialogFragment extends DialogFragment implements View.OnC
     private boolean confirmForm() {
         if(!validateTopic() | !validateDate() | ! validateTime() | !validateEmailList()) { return false; }
         Meeting meeting = new Meeting(mTopicString, mDateString, mTimeString, mRoomString, EMAILS);
-        ListMeetingActivity mActivity = (ListMeetingActivity) getActivity();
-        if (mActivity != null) mActivity.onAddMeeting(meeting);
+        if (activity != null) activity.onAddMeeting(meeting);
 
         dismiss();
         return true;
@@ -195,6 +199,11 @@ public class NewMeetingDialogFragment extends DialogFragment implements View.OnC
 
         if(mTimeEditText.getText() != null) { mTimeString = mTimeEditText.getText().toString(); }
         if(mTimeString.trim().isEmpty()) {
+            mTimeInputLayout.setErrorEnabled(true);
+            mTimeInputLayout.setError("Please enter a time");
+            return false;
+        }
+        if(!service.compareTime(mDateString, mTimeString)) {
             mTimeInputLayout.setErrorEnabled(true);
             mTimeInputLayout.setError("Please enter a time");
             return false;

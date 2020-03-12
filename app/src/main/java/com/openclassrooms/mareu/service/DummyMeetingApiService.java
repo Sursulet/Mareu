@@ -23,4 +23,12 @@ public class DummyMeetingApiService implements MeetingApiService {
 
     @Override
     public void deleteMeeting(Meeting meeting) { meetings.remove(meeting); }
+
+    @Override
+    public boolean compareTime(String date, String time) {
+        for(Meeting m : meetings) {
+            if(m.getDate().contains(date) && m.getTime().contains(time)) return false;
+        }
+        return true;
+    }
 }

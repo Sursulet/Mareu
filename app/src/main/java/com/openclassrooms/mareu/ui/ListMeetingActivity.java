@@ -67,6 +67,8 @@ public class ListMeetingActivity extends AppCompatActivity implements MyMeetingR
         mAdapter.getFilter().filter(constraint);
     }
 
+    public MeetingApiService getService() { return service; }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

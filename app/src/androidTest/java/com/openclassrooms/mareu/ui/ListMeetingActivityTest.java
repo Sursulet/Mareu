@@ -2,6 +2,7 @@ package com.openclassrooms.mareu.ui;
 
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.TimePicker;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.NoMatchingViewException;
@@ -23,6 +24,7 @@ import org.junit.Test;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -77,6 +79,26 @@ public class ListMeetingActivityTest {
                 .perform( RecyclerViewActions.actionOnItemAtPosition(0, MyViewAction.clickChildViewWithId(R.id.item_delete_btn)));
         // Then : the number of element is 11
         onView(ViewMatchers.withId(R.id.main_recyclerView)).check(new RecyclerViewItemCountAssertion(ITEMS_COUNT-1));
+    }
+
+    @Test
+    public void addAction_shouldAddItem() {
+        onView(ViewMatchers.withId(R.id.main_recyclerView)).check(new RecyclerViewItemCountAssertion(ITEMS_COUNT));
+        onView(ViewMatchers.withId(R.id.fab)).perform(click());
+        onView(ViewMatchers.withId(R.id.topicEditText)).perform(typeText("Test"));
+        onView(ViewMatchers.withId(R.id.dateEditText)).perform(click());
+        onView(ViewMatchers.withClassName(Matchers.equalTo (DatePicker.class.getName())))
+                .perform(PickerActions.setDate(2020, 4, 23));
+        onView (withText ("OK")).perform (click ());
+        onView(ViewMatchers.withId(R.id.timeEditText)).perform(click());
+        onView(ViewMatchers.withClassName(Matchers.equalTo (TimePicker.class.getName())))
+                .perform(PickerActions.setTime(9, 00));
+        onView (withText ("OK")).perform (click ());
+        onView(ViewMatchers.withId(R.id.emailEditText)).perform(typeText("xyz@gmail.com"));
+        onView(ViewMatchers.withId(R.id.add_email_btn)).perform(click());
+        onView(ViewMatchers.withId(R.id.action_ok)).perform(click());
+
+        onView(ViewMatchers.withId(R.id.main_recyclerView)).check(new RecyclerViewItemCountAssertion(ITEMS_COUNT+1));
     }
 
 

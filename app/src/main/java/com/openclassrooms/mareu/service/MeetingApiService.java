@@ -10,4 +10,5 @@ public interface MeetingApiService {
     List<RoomItem> getRooms();
     void addMeeting(Meeting meeting);
     void deleteMeeting(Meeting meeting);
+    boolean compareTime(String date, String time);
 }
