@@ -1,5 +1,7 @@
 package com.openclassrooms.mareu.ui;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -7,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
@@ -25,16 +28,19 @@ import com.openclassrooms.mareu.model.Meeting;
 import com.openclassrooms.mareu.model.RoomItem;
 import com.openclassrooms.mareu.service.MeetingApiService;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.openclassrooms.mareu.service.DummyRoomGenerator.DUMMY_ROOMS;
-
 public class NewMeetingDialogFragment extends DialogFragment implements View.OnClickListener {
+
+    private static final String DATE_FORMAT = "dd/MM/yyyy";
 
     @BindView(R.id.toolbar) Toolbar mToolbar;
     @BindView(R.id.topicInputLayout) TextInputLayout mTopicInputLayout;
@@ -58,7 +64,7 @@ public class NewMeetingDialogFragment extends DialogFragment implements View.OnC
 
     private ArrayList<String> EMAILS = new ArrayList<>();
     private Date mToday;
-    Date mDatePicker;
+    private Date mDatePicker;
 
 
     @Override
@@ -105,7 +111,7 @@ public class NewMeetingDialogFragment extends DialogFragment implements View.OnC
     }
 
     private void buildRoomListSpinner() {
-        ArrayList<RoomItem> ROOMS = new ArrayList<>(DUMMY_ROOMS);
+        List<RoomItem> ROOMS = service.getRooms();
         mRoomsSpinner.setAdapter(new RoomItemAdapter(context, ROOMS));
         mRoomsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -147,14 +153,38 @@ public class NewMeetingDialogFragment extends DialogFragment implements View.OnC
     }
 
     private void showDatePickerDialog() {
-        DialogFragment newFragment = new DatePickerFragment();
+        DialogFragment newFragment = new DatePickerFragment(mDateSetListener);
         newFragment.show(manager, "datePickerNewMeeting");
     }
 
     private void showTimePickerDialog() {
-        DialogFragment newFragment = new TimePickerFragment();
+        DialogFragment newFragment = new TimePickerFragment(mTimeSetListener);
         newFragment.show(manager, "timePickerNewMeeting");
     }
+
+    private DatePickerDialog.OnDateSetListener mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            Calendar c = Calendar.getInstance();
+            c.set(Calendar.YEAR, year);
+            c.set(Calendar.MONTH, month);
+            c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.FRANCE);
+            mDatePicker = c.getTime();
+            mDateString = simpleDateFormat.format(mDatePicker);
+            mDateEditText.setText(mDateString);
+        }
+    };
+
+    private TimePickerDialog.OnTimeSetListener mTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+                @Override
+                public void onTimeSet(android.widget.TimePicker view,
+                                      int hourOfDay, int minute) {
+                    mTimeString = String.format(Locale.FRANCE,"%d:%d", hourOfDay, minute);
+                    mTimeEditText.setText(mTimeString);
+                }
+            };
 
     private boolean confirmForm() {
         if(!validateTopic() | !validateDate() | ! validateTime() | !validateEmailList()) { return false; }

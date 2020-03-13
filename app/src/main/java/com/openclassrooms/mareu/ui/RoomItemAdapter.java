@@ -14,11 +14,11 @@ import androidx.annotation.Nullable;
 import com.openclassrooms.mareu.R;
 import com.openclassrooms.mareu.model.RoomItem;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class RoomItemAdapter extends ArrayAdapter<RoomItem> {
 
-    RoomItemAdapter(@NonNull Context context, @NonNull ArrayList<RoomItem> roomsList) {
+    RoomItemAdapter(@NonNull Context context, @NonNull List<RoomItem> roomsList) {
         super(context, 0, roomsList);
     }
 

@@ -45,16 +45,20 @@
                     android:text="@string/date"
                     android:textColor="@color/colorPrimary" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/filters_date"
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:focusable="false"
-                    android:textSize="18sp"
-                    android:background="#eee"/>
+                    app:endIconMode="clear_text">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/filters_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:textSize="18sp"
+                        android:background="#eee"/>
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
             <LinearLayout

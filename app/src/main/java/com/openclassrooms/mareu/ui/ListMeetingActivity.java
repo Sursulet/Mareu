@@ -1,7 +1,5 @@
 package com.openclassrooms.mareu.ui;
 
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -18,23 +16,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.DatePicker;
-import android.widget.TimePicker;
+import android.view.View;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class ListMeetingActivity extends AppCompatActivity implements MyMeetingRecyclerViewAdapter.OnMeetingListener,
-        DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class ListMeetingActivity extends AppCompatActivity implements MyMeetingRecyclerViewAdapter.OnMeetingListener {
 
     private MeetingApiService service;
-    private static final String DATE_FORMAT = "dd/MM/yyyy";
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fab) FloatingActionButton fab;
@@ -46,7 +38,6 @@ public class ListMeetingActivity extends AppCompatActivity implements MyMeetingR
 
     NewMeetingDialogFragment mNewMeetingDialog;
     FiltersDialogFragment mFiltersDialog;
-    String currentDateString, currentTimeString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,33 +113,11 @@ public class ListMeetingActivity extends AppCompatActivity implements MyMeetingR
         }
     }
 
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.FRANCE);
-        currentDateString = simpleDateFormat.format(c.getTime());
-
-        if(mNewMeetingDialog != null && mNewMeetingDialog.isVisible()) {
-            mNewMeetingDialog.mDateEditText.setText(currentDateString);
-            mNewMeetingDialog.mDatePicker = c.getTime();
-        }
-        if(mFiltersDialog != null && mFiltersDialog.isVisible()) mFiltersDialog.mDate.setText(currentDateString);
-    }
-
-    @Override
-    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        currentTimeString = String.format(Locale.FRANCE,"%d:%d", hourOfDay, minute);
-        if(mNewMeetingDialog != null && mNewMeetingDialog.isVisible()) mNewMeetingDialog.mTimeEditText.setText(currentTimeString);
-    }
-
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.setTitle("Filter");
+            fab.setVisibility(View.INVISIBLE);
             return true;
         }
 
@@ -166,10 +135,11 @@ public class ListMeetingActivity extends AppCompatActivity implements MyMeetingR
         public void onDestroyActionMode(ActionMode mode) {
             updateRecyclerView(mMeetings);
             mActionMode = null;
+            fab.setVisibility(View.VISIBLE);
         }
     };
 
-    private void updateRecyclerView(List<Meeting> meetings) {
+    public void updateRecyclerView(List<Meeting> meetings) {
         mAdapter = new MyMeetingRecyclerViewAdapter(ListMeetingActivity.this, meetings, this);
         mRecyclerView.setAdapter(mAdapter);
     }
