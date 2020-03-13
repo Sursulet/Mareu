@@ -3,6 +3,7 @@ package com.openclassrooms.mareu.ui;
 import android.app.DatePickerDialog;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,6 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.openclassrooms.mareu.R;
-import com.openclassrooms.mareu.di.DI;
 import com.openclassrooms.mareu.model.RoomItem;
 import com.openclassrooms.mareu.service.MeetingApiService;
 
@@ -34,6 +34,7 @@ public class FiltersDialogFragment extends DialogFragment {
 
     private static final String DATE_FORMAT = "dd/MM/yyyy";
 
+    private ListMeetingActivity activity;
     private MeetingApiService service;
     private FragmentManager manager;
 
@@ -42,9 +43,8 @@ public class FiltersDialogFragment extends DialogFragment {
     @BindView(R.id.rooms) ChipGroup mRoomsList;
 
     private Chip chip;
-    private String typeFilter;
-
-    private Callback mCallback;
+    private String typeFilter, constraint;
+    private String mDateString, mChipString;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,7 +58,9 @@ public class FiltersDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_dialog_filters, container, false);
         ButterKnife.bind(this, view);
 
-        service = DI.getNewInstanceApiService();
+        activity = (ListMeetingActivity) getActivity();
+        if (activity != null) { service = activity.getService(); }
+        //service = DI.getNewInstanceApiService();
         manager = getFragmentManager();
 
         buildToolbar();
@@ -73,7 +75,7 @@ public class FiltersDialogFragment extends DialogFragment {
         mRoomsList.setOnCheckedChangeListener((group, checkedId) -> {
             if(checkedId < 0) { typeFilter = null; return; }
             chip = group.findViewById(checkedId);
-            if(chip.isCheckable()) {mDate.setText(""); typeFilter="rooms";}
+            if(chip.isCheckable()) { mDate.setText(""); typeFilter="rooms";}
         });
 
         return view;
@@ -86,27 +88,28 @@ public class FiltersDialogFragment extends DialogFragment {
         mToolbar.setNavigationOnClickListener(v -> dismiss());
         mToolbar.setOnMenuItemClickListener(item -> {
             if (item.getItemId() == R.id.action_ok) {
-                String constraint = ""; String mDateString="";
-                if(mDate.getText() != null) {mDateString = mDate.getText().toString(); typeFilter="days";}
-                if(typeFilter.equals("days")) constraint = mDateString;
-                if(typeFilter.equals("rooms")) {constraint = chip.getText().toString(); typeFilter="rooms";}
-                if(mDate.getText().toString().isEmpty() && chip == null) return false;
-
-                if(mCallback == null) return false;
-                mCallback.onActionFilter(typeFilter, constraint);
-                dismiss();
-                return true;
+                if(mDate.getText() != null) {mDateString = mDate.getText().toString();}
+                if(chip != null) {mChipString = chip.getText().toString();}
+                return getTypeFilter();
             }
             return false;
         });
     }
 
-    public interface Callback {
-        void onActionFilter(String typeFilter, String constraint);
-    }
+    private boolean getTypeFilter() {
+        Log.d("TYPE", "getTypeFilter: " + typeFilter + " date " + mDateString + " chip " + mChipString);
+        if(mDateString.length() == 0 && mChipString == null) return false;
+        if(typeFilter == null) {
+            typeFilter = "days";
+            if(mChipString != null) { return false; }
+        }
 
-    void setCallback(Callback callback) {
-        this.mCallback = callback;
+        if(typeFilter.equals("days")) constraint = mDateString;
+        if(typeFilter.equals("rooms")) constraint = mChipString;
+
+        activity.onFilterMeeting(typeFilter, constraint);
+        dismiss();
+        return true;
     }
 
     private void showDatePickerDialog() {

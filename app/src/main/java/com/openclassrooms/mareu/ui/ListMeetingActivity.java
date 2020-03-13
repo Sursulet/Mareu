@@ -79,16 +79,6 @@ public class ListMeetingActivity extends AppCompatActivity implements MyMeetingR
 
     private void showFiltersDialog() {
         mFiltersDialog = new FiltersDialogFragment();
-        mFiltersDialog.setCallback((typeFilter, constraint) -> {
-            List<Meeting> mFilterList = new ArrayList<>();
-            if(typeFilter.equals("")) { mFilterList.addAll(mMeetings); }
-            if(typeFilter.equals("days")) mFilterList = service.getFilterByDay(constraint);
-            if(typeFilter.equals("rooms")) mFilterList = service.getFilterByRoom(constraint);
-            updateRecyclerView(mFilterList);
-
-            if(mActionMode != null) { return; }
-            mActionMode = startActionMode(mActionModeCallback);
-        });
         mFiltersDialog.show(getSupportFragmentManager(), "FiltersDialogFragment");
     }
 
@@ -100,10 +90,11 @@ public class ListMeetingActivity extends AppCompatActivity implements MyMeetingR
 
     @Override
     public void onDeleteMeeting(int position) {
-        if(mActionMode == null) {
+        //if(mActionMode == null) {
             service.deleteMeeting(mMeetings.get(position));
             buildRecyclerView();
-        }
+            if(mActionMode != null) mActionMode.finish();
+        //}
     }
 
     public void onAddMeeting(Meeting m) {
@@ -111,6 +102,17 @@ public class ListMeetingActivity extends AppCompatActivity implements MyMeetingR
             service.addMeeting(m);
             buildRecyclerView();
         }
+    }
+
+    public void onFilterMeeting(String typeFilter, String constraint) {
+        List<Meeting> mFilterList = new ArrayList<>();
+        if(typeFilter.equals("")) { mFilterList.addAll(mMeetings); }
+        if(typeFilter.equals("days")) mFilterList = service.getFilterByDay(constraint);
+        if(typeFilter.equals("rooms")) mFilterList = service.getFilterByRoom(constraint);
+        updateRecyclerView(mFilterList);
+
+        if(mActionMode != null) { return; }
+        mActionMode = startActionMode(mActionModeCallback);
     }
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
